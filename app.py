@@ -52,29 +52,46 @@ jobs = load_dataset()
 # PREPARE DATA
 # =====================================================
 def prepare_data(df):
-    for col in ["company_name", "company", "companyName"]:
-        if col in df.columns:
-            df["company_name"] = df[col]
-            break
 
-    for col in ["job_location", "location_name", "formatted_location"]:
-        if col in df.columns:
-            df["job_location"] = df[col]
-            break
+    if "company_name" not in df.columns:
+        df["company_name"] = ""
 
-    for col in ["description", "job_description"]:
-        if col in df.columns:
-            df["description"] = df[col]
-            break
+    if "job_location" not in df.columns:
+        df["job_location"] = ""
+
+    if "job_title" not in df.columns:
+        df["job_title"] = ""
+
+    # Handle description column safely
+    if "description" in df.columns:
+
+        desc_col = "description"
+
+    elif "job_description" in df.columns:
+
+        desc_col = "job_description"
+
+    else:
+
+        df["description"] = ""
+        desc_col = "description"
 
     df["combined"] = (
+
         df["job_title"].astype(str)
+
         + " "
+
         + df["company_name"].astype(str)
+
         + " "
+
         + df["job_location"].astype(str)
+
         + " "
-        + df["description"].astype(str)
+
+        + df[desc_col].astype(str)
+
     )
 
     return df
