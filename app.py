@@ -330,8 +330,8 @@ if st.sidebar.button("Get Recommendations"):
 card_html = f"""
 <div class="job-card">
 
-<div class="job-title">
-💼 {row['job_title']}
+💼<div class="job-title">
+{row['job_title']}
 </div>
 
 <div>
