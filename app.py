@@ -27,7 +27,14 @@ def load_css():
 
 load_css()
 st.title("💼 Job Recommendation System")
-st.caption("TF-IDF + Weighted Ranking + XAI + LIME + RAG")
+st.markdown("""
+# 🎯 AI Career Navigator
+
+### Intelligent Job Recommendation & Career Guidance System
+
+Leverage Artificial Intelligence to discover opportunities aligned
+with your skills, experience, and future industry trends.
+""")
 
 
 # =====================================================
@@ -140,21 +147,28 @@ def retrieve_jobs(user_input, top_n):
 # XAI
 # =====================================================
 def explain_skills(user_input, job_text):
+
+    user_skills = re.split(
+        r",|;|\s+",
+        user_input.lower()
+    )
+
     user_skills = [
-        skill.strip().lower()
-        for skill in re.split(r",|;", user_input)
+        skill.strip()
+        for skill in user_skills
         if skill.strip()
     ]
 
     job_text = str(job_text).lower()
 
     matched = []
+
     for skill in user_skills:
-        pattern = r"\b" + re.escape(skill) + r"\b"
-        if re.search(pattern, job_text):
+
+        if skill in job_text:
             matched.append(skill)
 
-    return matched
+    return list(set(matched))
 
 
 def explain_keywords(user_input):
@@ -309,25 +323,31 @@ if st.sidebar.button("Get Recommendations"):
         )
 
         st.markdown(
-            f"""
+f"""
 <div class="job-card">
 
 <div class="job-title">
 💼 {row['job_title']}
 </div>
 
-🏢 <b>Company:</b> {row['company_name']}<br>
+<div>
+🏢 <b>Company:</b> {row['company_name']}
+</div>
 
-📍 <b>Location:</b> {row['job_location']}<br><br>
+<div>
+📍 <b>Location:</b> {row['job_location']}
+</div>
+
+<br>
 
 <div class="job-score">
-⭐ Weighted Score: {weighted_score:.2f}/100
+⭐ Match Score: {weighted_score:.2f}/100
 </div>
 
 </div>
 """,
-            unsafe_allow_html=True
-        )
+unsafe_allow_html=True
+)
 
         with st.expander("🔍 Recommendation Insights"):
             matched_skills = explain_skills(
@@ -340,11 +360,13 @@ if st.sidebar.button("Get Recommendations"):
             )
 
             st.write(
-                "🎯 Matching Skills:",
-                matched_skills
-            )
+    f"Similarity Score: {similarity_score:.2f}"
+)
 
-            st.write(
-                "🔑 Important Keywords:",
-                keywords
-            )
+st.write(
+    f"Experience Match: {exp_score:.2f}"
+)
+
+st.write(
+    f"Future Demand Score: {future_score:.2f}"
+)
