@@ -266,22 +266,33 @@ def lime_predict(texts):
 # =====================================================
 # RAG
 # =====================================================
-def generate_explanation(user_input, experience, weighted_score, job_row):
+@st.cache_data(ttl=3600)
+def generate_explanation(
+    user_input,
+    experience,
+    weighted_score,
+    job_title,
+    company_name
+):
+
     prompt = f"""
 User Skills: {user_input}
 
 Experience: {experience}
 
-Job Title: {job_row['job_title']}
+Job Title: {job_title}
 
-Company: {job_row['company_name']}
+Company: {company_name}
 
 Weighted Score: {weighted_score:.2f}
 
 Explain why this job is suitable in 5 lines.
 """
 
-    response = model_gemini.generate_content(prompt)
+    response = model_gemini.generate_content(
+        prompt
+    )
+
     return response.text
 
 
@@ -419,7 +430,8 @@ if st.sidebar.button("Get Recommendations"):
                 skills,
                 experience,
                 recommendations[0]["weighted_score"],
-                top_job
+                top_job["job_title"],
+                top_job["company_name"]
             )
 
             st.markdown("## 🚀 AI Career Advisor")
