@@ -323,30 +323,25 @@ if st.sidebar.button("Get Recommendations"):
         )
 
         st.markdown(
-f"""
-<div class="job-card">
+            f"""
+            <div class="job-card">
 
-<div class="job-title">
-💼 {row['job_title']}
-</div>
-
-<div>
-🏢 <b>Company:</b> {row['company_name']}
-</div>
-
-<div>
-📍 <b>Location:</b> {row['job_location']}
-</div>
-
-<br>
-
-<div class="job-score">
-⭐ Match Score: {weighted_score:.2f}/100
-</div>
-
-</div>
-""",
-unsafe_allow_html=True
+            <div class="job-title">
+            💼 {row['job_title']}
+            </div>
+            <div>
+            🏢 <b>Company:</b> {row['company_name']}
+            </div>
+            <div>
+            📍 <b>Location:</b> {row['job_location']}
+            </div>
+        <br>
+            <div class="job-score">
+            ⭐ Match Score: {weighted_score:.2f}/100
+            </div>
+            </div>
+        """,
+        unsafe_allow_html=True
 )
 
         with st.expander("🔍 Recommendation Insights"):
@@ -360,13 +355,11 @@ unsafe_allow_html=True
             )
 
             st.write(
-    f"Similarity Score: {similarity_score:.2f}"
-)
-
-st.write(
-    f"Experience Match: {exp_score:.2f}"
-)
-
-st.write(
-    f"Future Demand Score: {future_score:.2f}"
-)
+                f"Similarity Score: {similarity_score:.2f}"
+            )
+            st.write(
+                f"Experience Match: {exp_score:.2f}"
+            )
+            st.write(
+                f"Future Demand Score: {future_score:.2f}"
+            )
