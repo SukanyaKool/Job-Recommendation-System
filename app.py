@@ -17,7 +17,39 @@ from sklearn.metrics.pairwise import cosine_similarity
 # PAGE CONFIG
 # =====================================================
 st.set_page_config(page_title="Job Recommendation System", page_icon="💼", layout="wide")
+def load_css():
 
+    with open(
+        "styles.css"
+    ) as f:
+
+        st.markdown(
+f"""
+<div class="job-card">
+
+<div class="job-title">
+
+💼 {row['job_title']}
+
+</div>
+
+🏢 <b>Company:</b> {row['company_name']}<br>
+
+📍 <b>Location:</b> {row['job_location']}<br><br>
+
+<div class="job-score">
+
+⭐ Weighted Score:
+{rec['weighted_score']:.2f}/100
+
+</div>
+
+</div>
+""",
+unsafe_allow_html=True
+)
+
+load_css()
 st.title("💼 Job Recommendation System")
 st.caption("TF-IDF + Weighted Ranking + XAI + LIME + RAG")
 
@@ -319,4 +351,28 @@ if st.sidebar.button("Get Recommendations"):
         rag_output = generate_explanation(skills, experience, recommendations[0]["weighted_score"], top_job)
 
         st.subheader("AI Career Insight")
-        st.success(rag_output)
+        st.markdown(
+f"""
+<div class="rag-card">
+
+<h3>🚀 AI Career Advisor</h3>
+
+<p>{rag_output}</p>
+
+</div>
+""",
+unsafe_allow_html=True
+)
+st.markdown(
+"""
+<div class="footer">
+
+Developed as part of an AI/ML Research Project<br>
+
+💡 Explainable Job Recommendation System
+with AI Career Guidance
+
+</div>
+""",
+unsafe_allow_html=True
+)
