@@ -68,7 +68,7 @@ jobs = load_dataset()
 # =====================================================
 def prepare_data(df):
 
-    if "company_name" not in df.columns:
+    if "company" not in df.columns:
         df["company_name"] = ""
 
     if "job_location" not in df.columns:
