@@ -271,29 +271,40 @@ def generate_explanation(
     user_input,
     experience,
     weighted_score,
-    job_title,
-    company_name
+    job_row
 ):
 
+    if not GEMINI_AVAILABLE:
+
+        return (
+            f"This role aligns with your skills in {user_input}. "
+            f"With {experience} years of experience, the position "
+            f"matches your profile and has strong growth potential."
+        )
+
     prompt = f"""
-User Skills: {user_input}
+    User Skills: {user_input}
+    Experience: {experience}
+    Job Title: {job_row['job_title']}
+    Company: {job_row['company_name']}
+    Weighted Score: {weighted_score:.2f}
 
-Experience: {experience}
+    Explain why this job is suitable in 5 lines.
+    """
 
-Job Title: {job_title}
+    try:
 
-Company: {company_name}
+        response = model_gemini.generate_content(
+            prompt
+        )
 
-Weighted Score: {weighted_score:.2f}
+        return response.text
 
-Explain why this job is suitable in 5 lines.
-"""
+    except Exception as e:
 
-    response = model_gemini.generate_content(
-        prompt
-    )
-
-    return response.text
+        return (
+            f"AI Career Insight unavailable: {e}"
+        )
 
 
 # =====================================================
