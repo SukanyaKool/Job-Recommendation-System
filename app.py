@@ -19,35 +19,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 st.set_page_config(page_title="Job Recommendation System", page_icon="💼", layout="wide")
 def load_css():
 
-    with open(
-        "styles.css"
-    ) as f:
-
+    with open("styles.css") as f:
         st.markdown(
-f"""
-<div class="job-card">
-
-<div class="job-title">
-
-💼 {row['job_title']}
-
-</div>
-
-🏢 <b>Company:</b> {row['company_name']}<br>
-
-📍 <b>Location:</b> {row['job_location']}<br><br>
-
-<div class="job-score">
-
-⭐ Weighted Score:
-{rec['weighted_score']:.2f}/100
-
-</div>
-
-</div>
-""",
-unsafe_allow_html=True
-)
+            f"<style>{f.read()}</style>",
+            unsafe_allow_html=True
+        )
 
 load_css()
 st.title("💼 Job Recommendation System")
@@ -315,64 +291,62 @@ if st.sidebar.button("Get Recommendations"):
 
     recommendations = []
     for i, (_, row) in enumerate(results.iterrows()):
-        similarity_score = scores[i] * 100
 
-        exp_score = get_experience_match_score(experience, row["job_title"])
-        future_score = demand_score(skills)
+    similarity_score = scores[i] * 100
 
-        weighted_score = calculate_weighted_score(similarity_score, exp_score, future_score)
+    exp_score = get_experience_match_score(
+        experience,
+        row["job_title"]
+    )
 
-        recommendations.append({"row": row, "weighted_score": weighted_score})
+    future_score = demand_score(
+        skills
+    )
 
-    recommendations.sort(key=lambda x: x["weighted_score"], reverse=True)
+    weighted_score = calculate_weighted_score(
+        similarity_score,
+        exp_score,
+        future_score
+    )
 
-    for rec in recommendations:
-        row = rec["row"]
+    st.markdown(
+        f"""
+<div class="job-card">
 
-        st.markdown(
-            f"""
-### {row['job_title']}
+<div class="job-title">
+💼 {row['job_title']}
+</div>
 
-**Company:** {row['company_name']}
+🏢 <b>Company:</b> {row['company_name']}<br>
 
-**Location:** {row['job_location']}
+📍 <b>Location:</b> {row['job_location']}<br><br>
 
-**Weighted Score:** {rec['weighted_score']:.2f}/100
-"""
+<div class="job-score">
+⭐ Weighted Score: {weighted_score:.2f}/100
+</div>
+
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+    with st.expander("🔍 Recommendation Insights"):
+
+        matched_skills = explain_skills(
+            skills,
+            row["combined"]
         )
 
-        with st.expander("Explain Recommendation"):
-            st.write("Matching Skills:", explain_skills(skills, row["combined"]))
-            st.write("Keywords:", explain_keywords(skills))
+        keywords = explain_keywords(
+            skills
+        )
 
-    if recommendations:
-        top_job = recommendations[0]["row"]
+        st.write(
+            "🎯 Matching Skills:",
+            matched_skills
+        )
 
-        rag_output = generate_explanation(skills, experience, recommendations[0]["weighted_score"], top_job)
-
-        st.subheader("AI Career Insight")
-        st.markdown(
-f"""
-<div class="rag-card">
-
-<h3>🚀 AI Career Advisor</h3>
-
-<p>{rag_output}</p>
-
-</div>
-""",
-unsafe_allow_html=True
-)
-st.markdown(
-"""
-<div class="footer">
-
-Developed as part of an AI/ML Research Project<br>
-
-💡 Explainable Job Recommendation System
-with AI Career Guidance
-
-</div>
-""",
-unsafe_allow_html=True
-)
+        st.write(
+            "🔑 Important Keywords:",
+            keywords
+        )
