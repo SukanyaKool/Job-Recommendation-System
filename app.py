@@ -50,7 +50,6 @@ model_gemini = genai.GenerativeModel(
 @st.cache_resource
 def load_dataset():
 
-```
 path = kagglehub.dataset_download(
     "asaniczka/1-3m-linkedin-jobs-and-skills-2024"
 )
@@ -65,7 +64,6 @@ jobs = pd.read_csv(
 jobs.fillna("", inplace=True)
 
 return jobs
-```
 
 jobs = load_dataset()
 
@@ -77,7 +75,6 @@ jobs = load_dataset()
 
 def prepare_data(df):
 
-```
 for col in [
     "company_name",
     "company",
@@ -129,7 +126,6 @@ df["combined"] = (
 )
 
 return df
-```
 
 jobs = prepare_data(jobs)
 
@@ -142,7 +138,6 @@ jobs = prepare_data(jobs)
 @st.cache_resource
 def build_tfidf():
 
-```
 tfidf = TfidfVectorizer(
 
     stop_words="english",
@@ -160,7 +155,6 @@ tfidf_matrix = tfidf.fit_transform(
 )
 
 return tfidf, tfidf_matrix
-```
 
 tfidf, tfidf_matrix = build_tfidf()
 
@@ -175,7 +169,7 @@ user_input,
 top_n
 ):
 
-```
+
 user_vector = tfidf.transform(
     [user_input]
 )
@@ -203,7 +197,7 @@ return (
     similarity_scores[top_indices]
 
 )
-```
+
 
 # =====================================================
 
@@ -216,7 +210,7 @@ user_input,
 job_text
 ):
 
-```
+
 user_skills = [
 
     skill.strip().lower()
@@ -250,13 +244,13 @@ for skill in user_skills:
         )
 
 return matched
-```
+
 
 def explain_keywords(
 user_input
 ):
 
-```
+
 vector = tfidf.transform(
     [user_input]
 )
@@ -272,7 +266,7 @@ top_indices = tfidf_scores.argsort()[-5:][::-1]
 return list(
     feature_names[top_indices]
 )
-```
+
 
 # =====================================================
 
@@ -282,7 +276,7 @@ return list(
 
 def get_job_level(job_title):
 
-```
+
 title = str(job_title).lower()
 
 if any(x in title for x in [
@@ -307,14 +301,14 @@ elif any(x in title for x in [
     return 5
 
 return 2
-```
+
 
 def get_experience_match_score(
 user_exp,
 job_title
 ):
 
-```
+
 job_level = get_job_level(
     job_title
 )
@@ -339,7 +333,7 @@ return max(
     0,
     100 - diff * 25
 )
-```
+
 
 # =====================================================
 
@@ -349,7 +343,7 @@ return max(
 
 future_skill_score = {
 
-```
+
 "python":90,
 "machine learning":92,
 "deep learning":94,
@@ -362,13 +356,13 @@ future_skill_score = {
 "devops":91,
 "llm":98,
 "genai":99
-```
+
 
 }
 
 def demand_score(user_input):
 
-```
+
 text = user_input.lower()
 
 scores = []
@@ -384,7 +378,7 @@ return (
     if scores
     else 50
 )
-```
+
 
 def calculate_weighted_score(
 similarity,
@@ -392,7 +386,7 @@ exp_score,
 future_score
 ):
 
-```
+
 return (
 
     0.50 * similarity
@@ -406,7 +400,7 @@ return (
     0.25 * future_score
 
 )
-```
+
 
 # =====================================================
 
@@ -425,7 +419,7 @@ sample_matrix = tfidf_matrix[:5000]
 
 def lime_predict(texts):
 
-```
+
 similarities = []
 
 for text in texts:
@@ -449,7 +443,7 @@ for text in texts:
 return np.array(
     similarities
 )
-```
+
 
 # =====================================================
 
@@ -464,9 +458,9 @@ weighted_score,
 job_row
 ):
 
-```
+
 prompt = f"""
-```
+
 
 User Skills: {user_input}
 
@@ -487,7 +481,7 @@ response = model_gemini.generate_content(
 )
 
 return response.text
-```
+
 
 # =====================================================
 
@@ -527,7 +521,7 @@ if st.sidebar.button(
 "Get Recommendations"
 ):
 
-```
+
 results, scores = retrieve_jobs(
     skills,
     top_n
@@ -583,7 +577,7 @@ for rec in recommendations:
 
     st.markdown(
         f"""
-```
+
 
 ### {row['job_title']}
 
@@ -595,7 +589,7 @@ for rec in recommendations:
 """
 )
 
-```
+
     with st.expander(
         "Explain Recommendation"
     ):
@@ -636,4 +630,3 @@ st.subheader(
 st.success(
     rag_output
 )
-```
