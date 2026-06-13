@@ -28,7 +28,7 @@ def load_css():
 load_css()
 st.title("💼 Job Recommendation System")
 st.markdown("""
-# 🎯 AI Career Navigator
+# 🎯 Career Navigator
 
 ### Intelligent Job Recommendation & Career Guidance System
 
@@ -301,10 +301,18 @@ top_n = st.sidebar.slider("Recommendations", 1, 20, 5)
 # BUTTON
 # =====================================================
 if st.sidebar.button("Get Recommendations"):
-    results, scores = retrieve_jobs(skills, top_n)
+
+    results, scores = retrieve_jobs(
+        skills,
+        top_n
+    )
+
+    st.write(f"Jobs Retrieved: {len(results)}")
 
     recommendations = []
+
     for i, (_, row) in enumerate(results.iterrows()):
+
         similarity_score = scores[i] * 100
 
         exp_score = get_experience_match_score(
@@ -323,81 +331,103 @@ if st.sidebar.button("Get Recommendations"):
         )
 
         recommendations.append({
-    "row": row,
-    "weighted_score": weighted_score
-})
-        
-    card_html = f"""
-    <div class="job-card">
-    
-    <div class="job-title">
-    💼 {row['job_title']}
-    </div>
-    
-    <div>
-    🏢 <b>Company:</b> {row['company_name']}
-    </div>
-    
-    <div>
-    📍 <b>Location:</b> {row['job_location']}
-    </div>
-    
-    <div class="job-score">
-    ⭐ Match Score: {weighted_score:.2f}/100
-    </div>
-    
-    </div>
-    """
-    
-    st.markdown(
-        card_html,
-        unsafe_allow_html=True
+            "row": row,
+            "weighted_score": weighted_score,
+            "similarity_score": similarity_score,
+            "experience_score": exp_score,
+            "future_score": future_score
+        })
+
+    recommendations.sort(
+        key=lambda x: x["weighted_score"],
+        reverse=True
     )
 
-    with st.expander("🔍 Recommendation Insights"):
-                matched_skills = explain_skills(
-                    skills,
-                    row["combined"]
-                )
-    
-                keywords = explain_keywords(
-                    skills
-                )
-    
-                st.write(
-                    f"Similarity Score: {similarity_score:.2f}"
-                )
-                st.write(
-                    f"Experience Match: {exp_score:.2f}"
-                )
-                st.write(
-                    f"Future Demand Score: {future_score:.2f}"
-                )
-                st.write(
-                    "🎯 Matching Skills:",matched_skills
-                )
-                st.write(
-                    "🔑 Important Keywords:",keywords
-                )
+    # DISPLAY ALL RECOMMENDATIONS
+    for rec in recommendations:
+
+        row = rec["row"]
+
+        st.markdown(
+            f"""
+<div class="job-card">
+
+<div class="job-title">
+💼 {row['job_title']}
+</div>
+
+<div>
+🏢 <b>Company:</b> {row['company_name']}
+</div>
+
+<div>
+📍 <b>Location:</b> {row['job_location']}
+</div>
+
+<br>
+
+<div class="job-score">
+⭐ Match Score: {rec['weighted_score']:.2f}/100
+</div>
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
+
+        with st.expander("🔍 Recommendation Insights"):
+
+            matched_skills = explain_skills(
+                skills,
+                row["combined"]
+            )
+
+            keywords = explain_keywords(
+                skills
+            )
+
+            st.write(
+                "🎯 Matching Skills:",
+                matched_skills
+            )
+
+            st.write(
+                "🔑 Important Keywords:",
+                keywords
+            )
+
+            st.write(
+                f"📊 Similarity Score: {rec['similarity_score']:.2f}"
+            )
+
+            st.write(
+                f"👨‍💼 Experience Match: {rec['experience_score']:.2f}"
+            )
+
+            st.write(
+                f"📈 Future Demand Score: {rec['future_score']:.2f}"
+            )
+
+    # TOP RECOMMENDATION FOR RAG
     if len(recommendations) > 0:
-    
+
         top_job = recommendations[0]["row"]
-    
+
         try:
-    
+
             rag_output = generate_explanation(
                 skills,
                 experience,
                 recommendations[0]["weighted_score"],
                 top_job
             )
-    
+
             st.markdown("## 🚀 AI Career Advisor")
-    
+
             st.info(rag_output)
-    
+
         except Exception as e:
-    
+
             st.error(
                 f"Gemini Error: {e}"
             )
