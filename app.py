@@ -291,26 +291,25 @@ if st.sidebar.button("Get Recommendations"):
 
     recommendations = []
     for i, (_, row) in enumerate(results.iterrows()):
+        similarity_score = scores[i] * 100
 
-    similarity_score = scores[i] * 100
+        exp_score = get_experience_match_score(
+            experience,
+            row["job_title"]
+        )
 
-    exp_score = get_experience_match_score(
-        experience,
-        row["job_title"]
-    )
+        future_score = demand_score(
+            skills
+        )
 
-    future_score = demand_score(
-        skills
-    )
+        weighted_score = calculate_weighted_score(
+            similarity_score,
+            exp_score,
+            future_score
+        )
 
-    weighted_score = calculate_weighted_score(
-        similarity_score,
-        exp_score,
-        future_score
-    )
-
-    st.markdown(
-        f"""
+        st.markdown(
+            f"""
 <div class="job-card">
 
 <div class="job-title">
@@ -327,26 +326,25 @@ if st.sidebar.button("Get Recommendations"):
 
 </div>
 """,
-        unsafe_allow_html=True
-    )
-
-    with st.expander("🔍 Recommendation Insights"):
-
-        matched_skills = explain_skills(
-            skills,
-            row["combined"]
+            unsafe_allow_html=True
         )
 
-        keywords = explain_keywords(
-            skills
-        )
+        with st.expander("🔍 Recommendation Insights"):
+            matched_skills = explain_skills(
+                skills,
+                row["combined"]
+            )
 
-        st.write(
-            "🎯 Matching Skills:",
-            matched_skills
-        )
+            keywords = explain_keywords(
+                skills
+            )
 
-        st.write(
-            "🔑 Important Keywords:",
-            keywords
-        )
+            st.write(
+                "🎯 Matching Skills:",
+                matched_skills
+            )
+
+            st.write(
+                "🔑 Important Keywords:",
+                keywords
+            )
