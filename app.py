@@ -327,34 +327,32 @@ if st.sidebar.button("Get Recommendations"):
     "weighted_score": weighted_score
 })
         
-card_html = f"""
-<div class="job-card">
-
-💼<div class="job-title">
-{row['job_title']}
-</div>
-
-<div>
-🏢 <b>Company:</b> {row['company_name']}
-</div>
-
-<div>
-📍 <b>Location:</b> {row['job_location']}
-</div>
-
-<br>
-
-<div class="job-score">
-⭐ Match Score: {weighted_score:.2f}/100
-</div>
-
-</div>
-"""
-
-st.markdown(
-    card_html,
-    unsafe_allow_html=True
-)
+    card_html = f"""
+    <div class="job-card">
+    
+    <div class="job-title">
+    💼 {row['job_title']}
+    </div>
+    
+    <div>
+    🏢 <b>Company:</b> {row['company_name']}
+    </div>
+    
+    <div>
+    📍 <b>Location:</b> {row['job_location']}
+    </div>
+    
+    <div class="job-score">
+    ⭐ Match Score: {weighted_score:.2f}/100
+    </div>
+    
+    </div>
+    """
+    
+    st.markdown(
+        card_html,
+        unsafe_allow_html=True
+    )
 
 with st.expander("🔍 Recommendation Insights"):
             matched_skills = explain_skills(
