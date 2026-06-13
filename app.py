@@ -68,49 +68,59 @@ jobs = load_dataset()
 # =====================================================
 def prepare_data(df):
 
-    if "company" not in df.columns:
-        df["company_name"] = ""
+    # Company column mapping
+    company_cols = [
+        "company_name",
+        "company",
+        "companyName"
+    ]
 
+    found = False
+
+    for col in company_cols:
+
+        if col in df.columns:
+
+            df["company_name"] = df[col]
+
+            found = True
+
+            break
+
+    if not found:
+
+        df["company_name"] = "Unknown Company"
+
+    # Location column mapping
     if "job_location" not in df.columns:
-        df["job_location"] = ""
+        df["job_location"] = "Unknown Location"
 
+    # Job title mapping
     if "job_title" not in df.columns:
-        df["job_title"] = ""
+        df["job_title"] = "Unknown Job"
 
-    # Handle description column safely
+    # Description mapping
     if "description" in df.columns:
-
         desc_col = "description"
 
     elif "job_description" in df.columns:
-
         desc_col = "job_description"
 
     else:
-
         df["description"] = ""
         desc_col = "description"
 
     df["combined"] = (
-
         df["job_title"].astype(str)
-
         + " "
-
         + df["company_name"].astype(str)
-
         + " "
-
         + df["job_location"].astype(str)
-
         + " "
-
         + df[desc_col].astype(str)
-
     )
 
     return df
-
 
 # If dataset has expected columns, prepare combined text
 jobs = prepare_data(jobs)
