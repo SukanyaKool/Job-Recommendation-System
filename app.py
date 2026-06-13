@@ -341,7 +341,7 @@ if st.sidebar.button("Get Recommendations"):
             </div>
             </div>
         """,
-        unsafe_allow_html=True
+unsafe_allow_html=True
 )
 
         with st.expander("🔍 Recommendation Insights"):
