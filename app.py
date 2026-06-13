@@ -354,50 +354,50 @@ if st.sidebar.button("Get Recommendations"):
         unsafe_allow_html=True
     )
 
-with st.expander("🔍 Recommendation Insights"):
-            matched_skills = explain_skills(
+    with st.expander("🔍 Recommendation Insights"):
+                matched_skills = explain_skills(
+                    skills,
+                    row["combined"]
+                )
+    
+                keywords = explain_keywords(
+                    skills
+                )
+    
+                st.write(
+                    f"Similarity Score: {similarity_score:.2f}"
+                )
+                st.write(
+                    f"Experience Match: {exp_score:.2f}"
+                )
+                st.write(
+                    f"Future Demand Score: {future_score:.2f}"
+                )
+                st.write(
+                    "🎯 Matching Skills:",matched_skills
+                )
+                st.write(
+                    "🔑 Important Keywords:",keywords
+                )
+    if len(recommendations) > 0:
+    
+        top_job = recommendations[0]["row"]
+    
+        try:
+    
+            rag_output = generate_explanation(
                 skills,
-                row["combined"]
+                experience,
+                recommendations[0]["weighted_score"],
+                top_job
             )
-
-            keywords = explain_keywords(
-                skills
+    
+            st.markdown("## 🚀 AI Career Advisor")
+    
+            st.info(rag_output)
+    
+        except Exception as e:
+    
+            st.error(
+                f"Gemini Error: {e}"
             )
-
-            st.write(
-                f"Similarity Score: {similarity_score:.2f}"
-            )
-            st.write(
-                f"Experience Match: {exp_score:.2f}"
-            )
-            st.write(
-                f"Future Demand Score: {future_score:.2f}"
-            )
-            st.write(
-                "🎯 Matching Skills:",matched_skills
-            )
-            st.write(
-                "🔑 Important Keywords:",keywords
-            )
-if len(recommendations) > 0:
-
-    top_job = recommendations[0]["row"]
-
-    try:
-
-        rag_output = generate_explanation(
-            skills,
-            experience,
-            recommendations[0]["weighted_score"],
-            top_job
-        )
-
-        st.markdown("## 🚀 AI Career Advisor")
-
-        st.info(rag_output)
-
-    except Exception as e:
-
-        st.error(
-            f"Gemini Error: {e}"
-        )
