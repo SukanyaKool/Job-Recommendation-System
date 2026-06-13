@@ -74,21 +74,21 @@ section[data-testid="stSidebar"] h3 {
 
     background: white;
 
+    color: #1f2937;
+
     border-radius: 15px;
 
     padding: 20px;
 
     margin-bottom: 20px;
 
-    box-shadow:
-        0px 4px 15px rgba(
-            0,
-            0,
-            0,
-            0.08
-        );
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.08);
 
-    border-left: 6px solid #0E4D92;
+    border-left: 6px solid #2563eb;
+}
+
+.job-card * {
+    color: #1f2937 !important;
 }
 
 .job-title {
