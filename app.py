@@ -322,8 +322,12 @@ if st.sidebar.button("Get Recommendations"):
             future_score
         )
 
-        st.markdown(
-    f"""
+        recommendations.append({
+    "row": row,
+    "weighted_score": weighted_score
+})
+        
+card_html = f"""
 <div class="job-card">
 
 <div class="job-title">
@@ -345,11 +349,14 @@ if st.sidebar.button("Get Recommendations"):
 </div>
 
 </div>
-""",
+"""
+
+st.markdown(
+    card_html,
     unsafe_allow_html=True
 )
 
-        with st.expander("🔍 Recommendation Insights"):
+with st.expander("🔍 Recommendation Insights"):
             matched_skills = explain_skills(
                 skills,
                 row["combined"]
@@ -368,17 +375,31 @@ if st.sidebar.button("Get Recommendations"):
             st.write(
                 f"Future Demand Score: {future_score:.2f}"
             )
-if recommendations:
+            st.write(
+                "🎯 Matching Skills:",matched_skills
+            )
+            st.write(
+                "🔑 Important Keywords:",keywords
+            )
+if len(recommendations) > 0:
 
     top_job = recommendations[0]["row"]
 
-    rag_output = generate_explanation(
-        skills,
-        experience,
-        recommendations[0]["weighted_score"],
-        top_job
-    )
+    try:
 
-    st.markdown("## 🚀 AI Career Advisor")
+        rag_output = generate_explanation(
+            skills,
+            experience,
+            recommendations[0]["weighted_score"],
+            top_job
+        )
 
-    st.info(rag_output)
+        st.markdown("## 🚀 AI Career Advisor")
+
+        st.info(rag_output)
+
+    except Exception as e:
+
+        st.error(
+            f"Gemini Error: {e}"
+        )
