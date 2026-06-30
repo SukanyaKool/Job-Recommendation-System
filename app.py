@@ -447,12 +447,13 @@ if st.sidebar.button("Get Recommendations"):
 
         try:
 
+            top_job = recommendations[0]["row"]
+
             rag_output = generate_explanation(
                 skills,
                 experience,
                 recommendations[0]["weighted_score"],
-                top_job["job_title"],
-                top_job["company_name"]
+                top_job
             )
 
             st.markdown("## 🚀 AI Career Advisor")
