@@ -17,8 +17,10 @@ from sklearn.metrics.pairwise import cosine_similarity
 # PAGE CONFIG
 # =====================================================
 st.set_page_config(page_title="Job Recommendation System", page_icon="💼", layout="wide")
-def load_css():
 
+
+def load_css():
+    """Load and apply CSS styling."""
     with open("styles.css") as f:
         st.markdown(
             f"<style>{f.read()}</style>",
@@ -41,24 +43,15 @@ with your skills, experience, and future industry trends.
 # GEMINI CONFIG
 # =====================================================
 GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
-
 GEMINI_AVAILABLE = False
 model_gemini = None
 
 if GOOGLE_API_KEY:
-
     try:
-
         genai.configure(api_key=GOOGLE_API_KEY)
-
-        model_gemini = genai.GenerativeModel(
-            "gemini-2.5-flash"
-        )
-
+        model_gemini = genai.GenerativeModel("gemini-2.5-flash")
         GEMINI_AVAILABLE = True
-
     except Exception:
-
         GEMINI_AVAILABLE = False
 
 
@@ -82,28 +75,18 @@ jobs = load_dataset()
 # PREPARE DATA
 # =====================================================
 def prepare_data(df):
-
+    """Prepare and clean dataset by mapping column names."""
     # Company column mapping
-    company_cols = [
-        "company_name",
-        "company",
-        "companyName"
-    ]
-
+    company_cols = ["company_name", "company", "companyName"]
     found = False
 
     for col in company_cols:
-
         if col in df.columns:
-
             df["company_name"] = df[col]
-
             found = True
-
             break
 
     if not found:
-
         df["company_name"] = "Unknown Company"
 
     # Location column mapping
@@ -172,35 +155,10 @@ def retrieve_jobs(user_input, top_n):
 # XAI
 # =====================================================
 def explain_skills(user_input, job_text):
-
-    user_skills = re.split(
-        r",|;|\s+",
-        user_input.lower()
-    )
-
-    user_skills = [
-        skill.strip()
-        for skill in user_skills
-        if skill.strip()
-    ]
-
-    job_text = str(job_text).lower()
-
-    matched = []
-
-    for skill in user_skills:
-
-        if skill in job_text:
-            matched.append(skill)
-
-    return list(set(matched))
-
-
-def explain_skills(user_input, job_text):
-
+    """Extract skills from user input that match job text."""
     user_skills = [
         skill.strip().lower()
-        for skill in re.split(r",|;", user_input)
+        for skill in re.split(r",|;|\s+", user_input)
         if skill.strip()
     ]
 
@@ -213,6 +171,16 @@ def explain_skills(user_input, job_text):
     ]
 
     return matched
+
+
+def explain_keywords(user_input):
+    """Extract keywords from user input."""
+    keywords = [
+        keyword.strip().lower()
+        for keyword in re.split(r",|;|\s+", user_input)
+        if keyword.strip()
+    ]
+    return keywords
 
 
 # =====================================================
@@ -347,11 +315,8 @@ def generate_explanation(
 # SIDEBAR
 # =====================================================
 st.sidebar.header("Search Parameters")
-
 skills = st.sidebar.text_area("Skills")
-
 experience = st.sidebar.number_input("Years of Experience", 0, 30, 2)
-
 top_n = st.sidebar.slider("Recommendations", 1, 20, 5)
 
 
@@ -359,12 +324,7 @@ top_n = st.sidebar.slider("Recommendations", 1, 20, 5)
 # BUTTON
 # =====================================================
 if st.sidebar.button("Get Recommendations"):
-
-    results, scores = retrieve_jobs(
-        skills,
-        top_n
-    )
-
+    results, scores = retrieve_jobs(skills, top_n)
     st.write(f"Jobs Retrieved: {len(results)}")
 
     recommendations = []
@@ -487,10 +447,4 @@ if st.sidebar.button("Get Recommendations"):
             st.info(rag_output)
 
         except Exception:
-
-        return (
-            f"Based on your skills ({user_input}) and "
-            f"{experience} years of experience, this role "
-            f"is a strong match because it aligns with your "
-            f"technical profile and current industry demand."
-        )
+            st.warning("AI Career Advisor temporarily unavailable.")
