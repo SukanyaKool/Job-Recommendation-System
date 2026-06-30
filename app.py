@@ -45,7 +45,6 @@ with your skills, experience, and future industry trends.
 GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 GEMINI_AVAILABLE = False
 
-
 if GOOGLE_API_KEY:
     try:
         genai.configure(api_key=GOOGLE_API_KEY)
@@ -299,18 +298,11 @@ def generate_explanation(
     """
 
     try:
-
-        response = model_gemini.generate_content(
-            prompt
-        )
-
+        response = model_gemini.generate_content(prompt)
         return response.text
-
     except Exception as e:
+        return f"AI Career Insight unavailable: {e}"
 
-        return (
-            f"AI Career Insight unavailable: {e}"
-        )
 
 
 # =====================================================
@@ -430,23 +422,15 @@ if st.sidebar.button("Get Recommendations"):
 
     # TOP RECOMMENDATION FOR RAG
     if len(recommendations) > 0:
-
         top_job = recommendations[0]["row"]
-
         try:
-
-            top_job = recommendations[0]["row"]
-
             rag_output = generate_explanation(
                 skills,
                 experience,
                 recommendations[0]["weighted_score"],
-                top_job
+                top_job,
             )
-
             st.markdown("## 🚀 AI Career Advisor")
-
             st.info(rag_output)
-
         except Exception:
             st.warning("AI Career Advisor temporarily unavailable.")
