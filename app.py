@@ -42,14 +42,14 @@ with your skills, experience, and future industry trends.
 # =====================================================
 # GEMINI CONFIG
 # =====================================================
-GOOGLE_API_KEY = st.secrets("GOOGLE_API_KEY")
+GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
 GEMINI_AVAILABLE = False
-model_gemini = genai.GenerativeModel("models/gemini-2.5-flash")
+
 
 if GOOGLE_API_KEY:
     try:
         genai.configure(api_key=GOOGLE_API_KEY)
-        model_gemini = genai.GenerativeModel("gemini-2.5-flash")
+        model_gemini = genai.GenerativeModel("models/gemini-2.5-flash")
         GEMINI_AVAILABLE = True
         st.write("Gemini Available:", GEMINI_AVAILABLE)
         st.write("Key Loaded:", GOOGLE_API_KEY is not None)
