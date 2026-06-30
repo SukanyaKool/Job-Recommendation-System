@@ -42,7 +42,7 @@ with your skills, experience, and future industry trends.
 # =====================================================
 # GEMINI CONFIG
 # =====================================================
-GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
+GOOGLE_API_KEY = st.secrets("GOOGLE_API_KEY")
 GEMINI_AVAILABLE = False
 model_gemini = None
 
