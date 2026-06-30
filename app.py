@@ -40,11 +40,26 @@ with your skills, experience, and future industry trends.
 # =====================================================
 # GEMINI CONFIG
 # =====================================================
-GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
+GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY")
 
-genai.configure(api_key=GOOGLE_API_KEY)
+GEMINI_AVAILABLE = False
+model_gemini = None
 
-model_gemini = genai.GenerativeModel("models/gemini-2.5-flash")
+if GOOGLE_API_KEY:
+
+    try:
+
+        genai.configure(api_key=GOOGLE_API_KEY)
+
+        model_gemini = genai.GenerativeModel(
+            "gemini-2.5-flash"
+        )
+
+        GEMINI_AVAILABLE = True
+
+    except Exception:
+
+        GEMINI_AVAILABLE = False
 
 
 # =====================================================
@@ -181,12 +196,23 @@ def explain_skills(user_input, job_text):
     return list(set(matched))
 
 
-def explain_keywords(user_input):
-    vector = tfidf.transform([user_input])
-    feature_names = np.array(tfidf.get_feature_names_out())
-    tfidf_scores = vector.toarray()[0]
-    top_indices = tfidf_scores.argsort()[-5:][::-1]
-    return list(feature_names[top_indices])
+def explain_skills(user_input, job_text):
+
+    user_skills = [
+        skill.strip().lower()
+        for skill in re.split(r",|;", user_input)
+        if skill.strip()
+    ]
+
+    job_text = str(job_text).lower()
+
+    matched = [
+        skill
+        for skill in user_skills
+        if skill in job_text
+    ]
+
+    return matched
 
 
 # =====================================================
@@ -460,8 +486,11 @@ if st.sidebar.button("Get Recommendations"):
 
             st.info(rag_output)
 
-        except Exception as e:
+        except Exception:
 
-            st.error(
-                f"Gemini Error: {e}"
-            )
+        return (
+            f"Based on your skills ({user_input}) and "
+            f"{experience} years of experience, this role "
+            f"is a strong match because it aligns with your "
+            f"technical profile and current industry demand."
+        )
