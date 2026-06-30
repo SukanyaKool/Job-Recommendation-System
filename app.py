@@ -3,12 +3,11 @@ import re
 
 import numpy as np
 import pandas as pd
-import google.generativeai as genai
 import streamlit as st
-
 
 import kagglehub
 
+from google import genai
 from lime.lime_text import LimeTextExplainer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -49,20 +48,13 @@ GEMINI_AVAILABLE = False
 
 if GOOGLE_API_KEY:
     try:
-    GOOGLE_API_KEY = st.secrets["GOOGLE_API_KEY"]
-
-    st.write("✅ Secret Loaded")
-
-    genai.configure(api_key=GOOGLE_API_KEY)
-
-    model_gemini = genai.GenerativeModel("models/gemini-2.5-flash")
-
-    response = model_gemini.generate_content("Say Hello")
-
-    st.write(response.text)
-
-except Exception as e:
-    st.exception(e)
+        genai.configure(api_key=GOOGLE_API_KEY)
+        model_gemini = genai.GenerativeModel("models/gemini-2.5-flash")
+        GEMINI_AVAILABLE = True
+        st.write("Gemini Available:", GEMINI_AVAILABLE)
+        st.write("Key Loaded:", GOOGLE_API_KEY is not None)
+    except Exception:
+        GEMINI_AVAILABLE = False
 
 
 # =====================================================
