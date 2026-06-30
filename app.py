@@ -4,10 +4,10 @@ import re
 import numpy as np
 import pandas as pd
 import streamlit as st
+import google.generativeai as genai
 
 import kagglehub
 
-from google import genai
 from lime.lime_text import LimeTextExplainer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
