@@ -3,5 +3,5 @@ pandas
 numpy
 scikit-learn
 lime
-google-generativeai
+google-genai
 kagglehub
